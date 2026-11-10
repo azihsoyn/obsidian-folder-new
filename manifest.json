@@ -1,0 +1,9 @@
+{
+  "id": "folder-new",
+  "name": "Folder New",
+  "version": "0.1.0",
+  "minAppVersion": "1.4.0",
+  "description": "Add a context-menu item to configured folders that creates a note named by a date rule, prefilled from the latest note in that folder or from a template.",
+  "author": "azihsoyn",
+  "isDesktopOnly": false
+}
