@@ -18,13 +18,15 @@ function expand(text, title, now) {
 }
 
 // フォルダ直下で、basename が nameFormat に厳密に合うファイルのうち日付が最大のもの。
-function latestByRule(folder, nameFormat) {
+// 今日より後の日付は年の打ち間違い（20260709 のつもりで 20270709 など）とみなして除く。
+function latestByRule(folder, nameFormat, now) {
+  const limit = now.clone().endOf("day");
   let best = null;
   let bestAt = null;
   for (const child of folder.children) {
     if (!(child instanceof TFile) || child.extension !== "md") continue;
     const at = moment(child.basename, nameFormat, true);
-    if (!at.isValid()) continue;
+    if (!at.isValid() || at.isAfter(limit)) continue;
     if (!bestAt || at.isAfter(bestAt)) {
       best = child;
       bestAt = at;
@@ -85,7 +87,7 @@ module.exports = class FolderNewPlugin extends Plugin {
     }
 
     let content = "";
-    const prev = rule.source === "latest" ? latestByRule(folder, rule.nameFormat) : null;
+    const prev = rule.source === "latest" ? latestByRule(folder, rule.nameFormat, now) : null;
     if (prev) {
       content = await this.app.vault.read(prev);
     } else if (rule.template) {
